@@ -1,0 +1,23 @@
+{
+    "name": "LEDTable",
+    "description": "To manage the lad table",
+    "keywords": "led,noise,rgb,math,fast",
+    "authors": [
+        {
+            "name": "Yves BAZIN",
+            "url": "",
+            "maintainer": true
+        }
+    ],
+    "repository": {
+        
+    },
+    "version": "1.0",
+    "license": "MIT",
+    ,
+    "frameworks": "arduino",
+    "platforms": "*",
+    "examples": [
+ 				"examples/*.ino"
+    ]
+}
