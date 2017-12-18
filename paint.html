@@ -1,0 +1,163 @@
+ <html>
+<head>
+<meta name = "viewport" content = "width = device-width, initial-scale = 1, maximum-scale = 1, user-scalable=no"/>
+<title>PAINT</title>
+
+ <link rel="stylesheet" href="images.css" type="text/css" />
+
+ <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script type="text/javascript" src="farbtastic.js"></script>
+ <link rel="stylesheet" href="farbtastic.css" type="text/css" />
+ <style type="text/css" media="screen">
+   .colorwell {
+     border: 2px solid #fff;
+     width: 6em;
+     text-align: center;
+     cursor: pointer;
+   }
+   body .colorwell-selected {
+     border: 2px solid #000;
+     font-weight: bold;
+	   
+   }
+ </style>
+<script>
+var websock;
+function start() {
+
+  websock = new WebSocket('ws://'+ window.location.hostname + ':82/');
+  websock.onopen = function(evt) { console.log('websock open'); };
+  websock.onclose = function(evt) { console.log('websock close'); };
+  websock.onerror = function(evt) { console.log(evt); };
+  
+}
+
+</script>
+</head>
+<body onload="javascript:start();"> 
+	<center><h1>PAINT</h1></center>
+	
+	<table>
+<tr><td>
+<table id="table" boder="0px">
+
+	
+</table></td><td>
+<form action="" style="width: 400px;">
+  <div class="form-item"><label for="color">Color:</label><input type="text" id="color" name="color" value="#123456" /></div><div id="picker"></div>
+</form>
+	</td></tr>
+	</table>
+<form action="" style="width: 400px;">
+  <div class="form-item"><label for="color">Color:</label><input type="text" id="color" name="color" value="#123456" /></div><div id="picker"></div>
+</form>
+
+<button id="new" >NEW PARTY</button><button id="stop" >STOP</button>
+<a href="index.html" >main menu</a>
+<script>
+function creategrid(x,y)
+	{
+		for(j=0;j<y;j++)
+			{
+		var $newtr=$("<tr></tr>");
+		for(i=0;i<x;i++)
+			{
+				var $newtd=$("<td class='row' ></td>");
+				var $newcase=$('<div class="case"></div>');
+				$newcase.attr("x",x-1-i).attr("y",y-1-j);
+				$newtd.append($newcase);
+				$newtr.append($newtd);
+	//			<tr>
+//<td ><div class="case" x="2" y="3" >qsd</div> </td>	
+//<td ><div class="case" x="3" y="4" >qsds</div> </td>	
+//</tr>
+			}
+		$("#table").append($newtr);
+			}
+		//alert($("#table").html());
+	}
+	
+	
+
+
+$("#b1").click(function(){
+//$.get(urlBase+"/change?v=scroll",function(data){}); 
+//alert($("#scrolltext").attr("value"));
+//$.get(urlBase+"/b?r="+parseInt($("#bri").val()),function(data){}); 	
+	websock.send("left");
+});	
+	$("#tul").click(function(){
+//$.get(urlBase+"/change?v=scroll",function(data){}); 
+//alert($("#scrolltext").attr("value"));
+//$.get(urlBase+"/b?r="+parseInt($("#bri").val()),function(data){}); 	
+	websock.send("turnl");
+});	
+	
+		$("#tur").click(function(){
+//$.get(urlBase+"/change?v=scroll",function(data){}); 
+//alert($("#scrolltext").attr("value"));
+//$.get(urlBase+"/b?r="+parseInt($("#bri").val()),function(data){}); 	
+	websock.send("turnr");
+});	
+$("#br").click(function(){
+//$.get(urlBase+"/change?v=scroll",function(data){}); 
+//alert($("#scrolltext").attr("value"));
+//$.get(urlBase+"/b?r="+parseInt($("#bri").val()),function(data){}); 	
+	websock.send("right");
+});		
+	
+$("#de").click(function(){
+//$.get(urlBase+"/change?v=scroll",function(data){}); 
+//alert($("#scrolltext").attr("value"));
+//$.get(urlBase+"/b?r="+parseInt($("#bri").val()),function(data){}); 	
+	websock.send("descend");
+});		
+	
+$("#new").click(function(){
+//$.get(urlBase+"/change?v=scroll",function(data){}); 
+//alert($("#scrolltext").attr("value"));
+//$.get(urlBase+"/b?r="+parseInt($("#bri").val()),function(data){}); 
+	$("div.case").css("background-color","#000000");
+	websock.send("new");
+});		
+	
+$("#stop").click(function(){
+//$.get(urlBase+"/change?v=scroll",function(data){}); 
+//alert($("#scrolltext").attr("value"));
+//$.get(urlBase+"/b?r="+parseInt($("#bri").val()),function(data){}); 	
+	websock.send("stop");
+});	
+$( document ).ready(function(){
+	
+		creategrid(30,20);	
+	$("div.case").click(function(){
+		rgb=hexToRgb($("#color").val());
+	//alert($(this).attr("x")+":"+$(this).attr("y"));
+	$(this).css("background-color",$("#color").val());
+		websock.send("paint "+$(this).attr("x")+" "+$(this).attr("y")+" "+rgb.r+" "+rgb.b+" "+rgb.g);
+		
+		
+		
+});	
+	    $('#picker').farbtastic('#color');
+		  
+//  });
+	
+	
+	function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+	
+				   
+} );
+					
+					
+					
+</script>
+</body>
+</html>
