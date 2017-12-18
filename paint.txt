@@ -142,6 +142,15 @@ line 94
 } 
 // just change the width and height
 
+
+when you launch go to 
+http://ledtable.local/paint.html
+
+and click "new party"
+
+to erase the board clieck again new party
+
+
 please ask question of needed
 rgds
 YVes
