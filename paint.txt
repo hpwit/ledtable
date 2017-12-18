@@ -1,0 +1,147 @@
+Hello
+here is how to do it
+Create a sketch via arduino
+unzip the htmlpages.zip in the directorty Arduino/you_sketch_name/data
+you sketch should look like this
+download paint.h and put it in you sketch directory
+
+
+edit paint.h
+line 63
+replace
+    fill(CRGB(0,0,0));
+ by
+
+fill_solid(leds, NUM_LEDS, CRGB(0,0,0)); //or whateever color you prefer
+
+
+you sketch.ino should look like this
+
+
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <WebSocketsServer.h>
+#include <ESP8266mDNS.h>
+#include <WiFiUdp.h>
+#include <FS.h>
+
+
+#define FASTLED_ESP8266_RAW_PIN_ORDER
+#define FASTLED_ESP8266_NODEMCU_PIN_ORDER
+#define FASTLED_ESP8266_D1_PIN_ORDER
+#define FASTLED_ALLOW_INTERRUPTS 0
+#include "FastLED.h"
+FASTLED_USING_NAMESPACE
+
+#include "paint.h"
+
+#define LED_WIDTH  128
+#define LED_HEIGHT 32
+#define DATA_PIN 3 //or whatever you like
+
+
+bool isTable=true //this is on muy internal variable for the entire library when I create the ledstrip 
+int NUM_LEDS=LED_WIDTH*LED_HEIGHT;
+
+CRGB leds[LED_WIDTH*LED_HEIGHT];
+
+
+
+void PixelOn(byte x,byte y,CRGB Color)
+{
+    int offset=0;
+    if (x<0 or y<0 or x>=LED_WIDTH or y>=LED_HEIGHT)
+        return ;
+    if(y%2==0)
+        offset=x+y*LED_WIDTH;
+    else
+        offset=2 * LED_WIDTH * ((int)floor(y / 2) + 1) - 1 - x;
+    
+    leds[offset]=Color;
+     
+} // this is for ma table 'cause i am going snake up to you to use another one depending on how your strips are wired
+
+
+void setup()
+{
+//all you code to initiate the web server and connect to the wifi
+//and activate the SPIFF
+
+//something like this
+
+    WiFi.mode(WIFI_STA);
+    Serial.printf("Connecting to %s\n", "SSID");
+    Serial.printf("Connecting ");
+    WiFi.begin("SSID", "password");
+    while (WiFi.status() != WL_CONNECTED) {
+         delay(500);
+         Serial.print(".");
+     }
+     
+     Serial.print("Connected! Open http://");
+     Serial.print(WiFi.localIP());
+     Serial.println(" in your browser");
+    if(mdns.begin("ledtable",WiFi.localIP())) //i use mdns  to avoid to tape the ip address i can look at the page using http://ledtable.local
+    Serial.println("MDNS has started");
+     SPIFFS.begin();
+     
+     Dir dir = SPIFFS.openDir("/");
+     while (dir.next()) {
+         String fileName = dir.fileName();
+         size_t fileSize = dir.fileSize();
+         Serial.printf("FS File: %s, size: %s\n", fileName.c_str(), String(fileSize).c_str());
+     }
+     MDNS.addService("http","tcp",80);
+     MDNS.addService("ws", "tcp", 82);  
+
+
+FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS   )  ;
+
+initPaint() //this create the websockets on port 82 and add the static page
+    server.serveStatic("/", SPIFFS, "/index.html");
+    
+    server.serveStatic("/farbtastic.js", SPIFFS, "/farbtastic.js");
+    
+    server.serveStatic("/farbtastic.css", SPIFFS, "/farbtastic.css");
+    
+    server.serveStatic("/marker.png", SPIFFS, "/marker.png");
+    
+    server.serveStatic("/mask.png", SPIFFS, "/mask.png");
+    
+    server.serveStatic("/wheel.png", SPIFFS, "/wheel.png");
+ 
+ 
+ // the code above could be added to the initPaint()
+ 
+ server.begin();
+}
+
+void loop()
+{
+
+  server.handleClient();
+    executePaintSocketControl();   
+
+}
+
+
+
+
+
+
+now in the file paint.html
+line 94
+		creategrid(30,20);	//Here you decice the size of the grid for you 128*32
+    
+ the size of a square is defined in image.css
+ .case {
+	border: 2px solid black;
+	/*border-color:rgba(215,5,9,1.00);*/
+	   width: 10px;
+  height: 10px;
+} 
+// just change the width and height
+
+please ask question of needed
+rgds
+YVes
