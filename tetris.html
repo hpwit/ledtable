@@ -1,0 +1,85 @@
+ <html>
+<head>
+<title>Tetris</title>
+ <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+var websocket;
+function start() {
+
+  websocket = new WebSocket('ws://192.168.29.161:81/');
+  websocket.onopen = function(evt) { console.log('websocket open'); websocket.send("new"); };
+  websocket.onclose = function(evt) { console.log('websocket close'); };
+  websocket.onerror = function(evt) { console.log(evt); };
+  
+}
+
+</script>
+</head>
+<body> 
+<center><h1>Tetris</h1></center>
+	
+
+<button id="new">NEW Game</button>
+<button id="left">Left (Cursor Left)</button>
+<button id="right">Right (Cursor Right)</button>
+<button id="turnl">Rotate Left (Down)</button>
+<button id="turnr">Rotate Right (Up)</button>
+
+<script>
+	
+$("#new").click(function(){
+	websocket.send("new");
+});		
+	
+$("#left").click(function(){
+	websocket.send("left");
+});	
+$("#right").click(function(){
+	websocket.send("right");	
+});	
+$("#new").click(function(){
+	websocket.send("new");
+});	
+$("#turnr").click(function(){
+	websocket.send("turnr");
+});	
+$("#turnl").click(function(){
+	websocket.send("turnl");
+});	
+
+
+$( document ).ready(function(){
+	console.info("Ready");
+
+document.onkeydown = checkKey;
+
+function checkKey(e) {
+
+    e = e || window.event;
+
+    if (e.keyCode == '38') {
+        // up arrow
+	websocket.send("turnr");
+    }
+    else if (e.keyCode == '40') {
+        // down arrow
+	websocket.send("turnl");
+    }
+    else if (e.keyCode == '37') {
+       // left arrow
+	websocket.send("left");
+    }
+    else if (e.keyCode == '39') {
+       // right arrow
+	websocket.send("right");
+    }
+
+}
+	start();	
+} );
+					
+					
+					
+</script>
+</body>
+</html>
